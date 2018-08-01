@@ -11,3 +11,4 @@ sudo chmod +x /usr/local/bin/phpunit
 docker-compose up -d
 
 
+

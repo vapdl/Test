@@ -4,13 +4,15 @@ services:
 
   php7-mysql:
     container_name: php7-database
-    image: mariadb
+    image: mysql
+    command: --default-authentication-plugin=mysql_native_password
     environment:
-      MYSQL_ROOT_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: mypassword
+      MYSQL_DATABASE: euromillions
+    ports:
+      - "3306:3306"
     volumes:
-      - "./db:/var/lib/mysql"
-    networks:
-      - local
+      - "./docker-entrypoint-initdb.d/draw.sql:/docker-entrypoint-initdb.d/draw.sql"
     restart: always
 
     # Redis perhaps?
