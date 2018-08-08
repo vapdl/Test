@@ -1,5 +1,9 @@
 <?php
-
+/**
+ *
+ * Clase que muestra excepciones generadas por la conexion con alguna API
+ *
+ */
 namespace src\exceptions;
 
 use Exception;

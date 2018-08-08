@@ -1,5 +1,9 @@
 <?php
-
+/**
+ *
+ * Repositorio que brinda funcionalidad a la aplicacion sobre sorteo Euromillion.
+ *
+ */
 namespace src\repositories;
 
 use src\models\Euromillions;
@@ -7,17 +11,31 @@ use src\services\ApiMagayoService;
 
 class EuromillionsRepository
 {
+    /**
+     *
+     * Constructor donde se puede seleccionar a que Api de loterias nos vamos a conectar para bajar los sorteos.
+     *
+     */
     public function __construct($dev=false)
     {
             $this->service = new ApiMagayoService('euromillions', $dev);
             $this->model= new Euromillions();
     }
-
+    /**
+     *
+     * Metodo que obtiene el ultimo sorteo de la Api.
+     *
+     */
     public function getLastDrawResultFromAPI()
     {
         return $this->service->fetch();
     }
 
+    /**
+     *
+     * Metodo que guarda el ultimo sorteo Euromillion.
+     *
+     */
     public function saveDraw($draw)
     {
         $this->model->draw_date= $draw['drawDate'];
@@ -33,9 +51,20 @@ class EuromillionsRepository
         return $this->model;
     }
 
+    /**
+     *
+     * Metodo que obtiene el ultimo sorteo Euromillion.
+     *
+     */
     public function getLastDraw()
     {
-        $this->model->getLastDraw();
+        $result=$this->model->getLastDraw();
+
+        if($result==false)
+        {
+            $draw= $this->getLastDrawResultFromAPI();
+            $this->saveDraw($draw);
+        }
         return $this->model;
     }
 }

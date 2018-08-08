@@ -1,12 +1,16 @@
 <?php
-
+/**
+ *
+ * Conexion con la API de loterias Magayo.
+ *
+ */
 namespace src\services;
 
-define("APIKEY", "mASBxwC2sUzjyTNRpS");
+define("APIKEY", "QS538DW5AKABASBMLD");
 define("BASEURL", "https://www.magayo.com/api/results.php");
 
 use src\interfaces\IResultApi;
-use src\services\providers\ApiLotoConnector;
+use src\providers\ApiLotoConnector;
 use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
@@ -16,7 +20,11 @@ use GuzzleHttp\Exception\ClientException;
 class ApiMagayoService extends ApiLotoConnector implements IResultApi
 {
     private $game;
-
+    /**
+     *
+     * Constructor que depende si es entorno de prod o pruebas mockea una respuesta o va y llama a la API.
+     *
+     */
     public function __construct($game, $dev= false)
     {
         if($dev)
@@ -31,7 +39,11 @@ class ApiMagayoService extends ApiLotoConnector implements IResultApi
         }
         $this->game = $game;
     }
-
+    /**
+     *
+     * Metodo que trae el ultimo sorteo de la API Magayo.
+     *
+     */
     public function fetch()
     {
         try {
@@ -41,22 +53,40 @@ class ApiMagayoService extends ApiLotoConnector implements IResultApi
             $this->throwException(sprintf('Failed to get data'));
         }
     }
-
+    /**
+     *
+     * Metodo que genera request para traer el ultimo sorteo de la API Magayo.
+     *
+     */
     public function getRequest()
     {
         return $this->client->request('GET', BASEURL, ['query' => ['api_key' => APIKEY, 'game' => $this->game]]);
     }
 
+    /**
+     *
+     * Metodo que setea el juego a traer informacion de la API Magayo.
+     *
+     */
     public function setGame($game)
     {
         $this->game = $game;
     }
-
+    /**
+     *
+     * Metodo que retorna el juego a traer informacion de la API Magayo.
+     *
+     */
     public function getGame()
     {
         return $this->game;
     }
 
+    /**
+     *
+     * Metodo obligatorio que deben tener todas las API de loterias que normaliza la respuesta de la API.
+     *
+     */
     protected function setDraw($response)
     {
         $arr['status'] = $response->getStatusCode();
@@ -64,7 +94,7 @@ class ApiMagayoService extends ApiLotoConnector implements IResultApi
         if($arr['status'] == 200)
         {
             $data= json_decode($response->getBody());
-            if($data->error == 200)
+            if($data->error == 0)
             {
                 foreach(explode(',',$data->results) as $item => $value)
                 {
